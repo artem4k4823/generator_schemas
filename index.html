@@ -54,68 +54,81 @@
             background: #334155;
             border-radius: 3px;
         }
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
         .node-hover:hover {
             filter: brightness(0.95);
             cursor: pointer;
         }
+        .safe-bottom {
+            padding-bottom: env(safe-area-inset-bottom, 0px);
+        }
     </style>
 </head>
-<body class="bg-slate-950 text-slate-100 h-[100dvh] w-screen flex flex-col overflow-hidden">
+<body class="bg-slate-950 text-slate-100 h-[100dvh] w-screen flex flex-col overflow-hidden safe-bottom">
 
-    <!-- Minimalist Top Control Bar -->
-    <header class="h-12 bg-slate-900 border-b border-slate-800 px-2.5 sm:px-4 flex items-center justify-between gap-2 shrink-0 z-30">
-        <!-- Mobile Segmented Switcher (Код / Схема) -->
-        <div class="flex md:hidden bg-slate-950 p-0.5 rounded-lg border border-slate-800 shrink-0">
-            <button id="tabCode" class="px-3 py-1 rounded-md text-xs font-medium bg-indigo-600 text-white transition">
-                Код
-            </button>
-            <button id="tabChart" class="px-3 py-1 rounded-md text-xs font-medium text-slate-400 hover:text-white transition">
-                Схема
-            </button>
+    <!-- Responsive Non-Overlapping Top Bar -->
+    <header class="bg-slate-900 border-b border-slate-800 px-2.5 py-2 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 shrink-0 z-30">
+        <!-- Row 1 on mobile: Segmented Switcher + Example/Method Selectors -->
+        <div class="flex items-center justify-between sm:justify-start gap-2 w-full sm:w-auto min-w-0">
+            <!-- Mobile Segmented Switcher (Код / Схема) -->
+            <div class="flex md:hidden bg-slate-950 p-0.5 rounded-lg border border-slate-800 shrink-0">
+                <button id="tabCode" type="button" class="px-3 py-1.5 rounded-md text-xs font-semibold bg-indigo-600 text-white transition shrink-0">
+                    Код
+                </button>
+                <button id="tabChart" type="button" class="px-3 py-1.5 rounded-md text-xs font-semibold text-slate-400 hover:text-white transition shrink-0">
+                    Схема
+                </button>
+            </div>
+
+            <!-- Presets & Method Selectors -->
+            <div class="flex items-center gap-1.5 min-w-0 flex-1 sm:flex-initial justify-end sm:justify-start">
+                <select id="presetSelect" aria-label="Примеры" class="h-8 bg-slate-800 text-slate-200 border border-slate-700 rounded-lg px-2 text-xs font-medium focus:outline-none cursor-pointer truncate min-w-[110px] max-w-[175px] sm:max-w-[210px] shrink">
+                    <option value="quadratic">Квадратное ур-е</option>
+                    <option value="maxArray">Цикл + Условие</option>
+                    <option value="factorial">Факториал (while)</option>
+                    <option value="bubbleSort">Сортировка (for)</option>
+                    <option value="doWhileMenu">ПИН-код (do-while)</option>
+                    <option value="switchCalc">Switch-Case</option>
+                </select>
+
+                <select id="methodSelect" aria-label="Метод" class="hidden h-8 bg-slate-800 text-indigo-300 border border-slate-700 rounded-lg px-2 text-xs font-medium focus:outline-none cursor-pointer truncate max-w-[115px] sm:max-w-[160px] shrink-0"></select>
+            </div>
         </div>
 
-        <!-- Presets & Method Selectors -->
-        <div class="flex items-center gap-1.5 min-w-0 flex-1 md:flex-initial">
-            <select id="presetSelect" aria-label="Примеры" class="bg-slate-800 text-slate-200 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs font-medium focus:outline-none cursor-pointer truncate max-w-[150px] sm:max-w-[210px]">
-                <option value="quadratic">Квадратное ур-е</option>
-                <option value="maxArray">Максимум массива</option>
-                <option value="factorial">Факториал (while)</option>
-                <option value="bubbleSort">Сортировка (for)</option>
-                <option value="doWhileMenu">ПИН-код (do-while)</option>
-                <option value="switchCalc">Калькулятор (switch)</option>
-            </select>
-
-            <select id="methodSelect" aria-label="Метод" class="hidden bg-slate-800 text-indigo-300 border border-slate-700 rounded-lg px-2 py-1.5 text-xs font-medium focus:outline-none cursor-pointer truncate max-w-[130px] sm:max-w-[180px]"></select>
-        </div>
-
-        <!-- Compact Actions: Theme, Loop style, Export -->
-        <div class="flex items-center gap-1.5 shrink-0">
-            <button id="btnThemeToggle" title="Переключить тему (ГОСТ Ч/Б / Цветная)" class="h-8 px-2.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-medium flex items-center gap-1.5 transition">
-                <span id="themeIndicator" class="w-2 h-2 rounded-full bg-indigo-400"></span>
+        <!-- Row 2 on mobile: Horizontally scrollable non-shrinking action buttons -->
+        <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar w-full sm:w-auto justify-end shrink-0">
+            <button id="btnThemeToggle" type="button" title="Переключить тему (ГОСТ Ч/Б / Цветная)" class="h-8 px-2.5 rounded-lg bg-slate-800 hover:bg-slate-700 active:bg-slate-600 text-slate-200 border border-slate-700 text-xs font-medium flex items-center gap-1.5 transition shrink-0 whitespace-nowrap">
+                <span id="themeIndicator" class="w-2 h-2 rounded-full bg-indigo-400 shrink-0"></span>
                 <span id="themeLabel">Цвет</span>
             </button>
 
-            <button id="btnHexToggle" title="Форма цикла for: Шестиугольник ГОСТ / Ромб" class="h-8 px-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-indigo-300 border border-slate-700 text-xs font-mono font-semibold transition">
-                ⬡ for
+            <button id="btnHexToggle" type="button" title="Форма цикла for: Шестиугольник ГОСТ / Ромб" class="h-8 px-2.5 rounded-lg bg-slate-800 hover:bg-slate-700 active:bg-slate-600 text-indigo-300 border border-slate-700 text-xs font-mono font-semibold transition shrink-0 whitespace-nowrap">
+                ⬡ ГОСТ
             </button>
 
-            <button id="btnExportSVG" title="Скачать SVG" class="h-8 px-2.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-medium transition">
+            <button id="btnExportSVG" type="button" title="Скачать SVG" class="h-8 px-3 rounded-lg bg-slate-800 hover:bg-slate-700 active:bg-slate-600 text-slate-200 border border-slate-700 text-xs font-medium transition shrink-0 whitespace-nowrap">
                 SVG
             </button>
 
-            <button id="btnExportPNG" title="Скачать PNG" class="h-8 px-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-medium transition shadow-sm">
+            <button id="btnExportPNG" type="button" title="Скачать PNG" class="h-8 px-3 rounded-lg bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-700 text-white text-xs font-medium transition shadow-sm shrink-0 whitespace-nowrap">
                 PNG
             </button>
         </div>
     </header>
 
-    <!-- Main Workspace (Split on Desktop, Tabbed on Mobile) -->
+    <!-- Main Workspace (Split on Desktop, Strictly Separated Views on Mobile) -->
     <div class="flex-1 flex overflow-hidden relative">
         
         <!-- Code Editor Panel -->
         <div id="codePanel" class="w-full md:w-[400px] lg:w-[440px] h-full bg-slate-950 md:border-r border-slate-800 flex flex-col shrink-0 relative">
             <div class="relative flex-1 flex overflow-hidden">
-                <div id="lineNumbers" class="line-numbers w-10 py-3 pr-2 text-right text-slate-600 bg-slate-900/40 border-r border-slate-800/60 text-xs select-none overflow-hidden">
+                <div id="lineNumbers" class="line-numbers w-10 py-3 pr-2 text-right text-slate-600 bg-slate-900/40 border-r border-slate-800/60 text-xs select-none overflow-hidden shrink-0">
                     1
                 </div>
                 <textarea 
@@ -124,19 +137,27 @@
                     autocapitalize="off"
                     autocomplete="off"
                     autocorrect="off"
-                    class="code-editor flex-1 p-3 bg-transparent text-slate-100 text-xs sm:text-[13px] focus:outline-none resize-none overflow-y-auto whitespace-pre"
+                    class="code-editor flex-1 p-3 pb-20 md:pb-6 bg-transparent text-slate-100 text-xs sm:text-[13px] focus:outline-none resize-none overflow-y-auto whitespace-pre"
                     placeholder="Вставьте код на Java..."
                 ></textarea>
             </div>
 
-            <!-- Mobile Floating Action Button: Build & Switch to Chart -->
-            <button id="btnMobileBuild" class="md:hidden absolute bottom-5 right-5 z-20 px-4 py-3 rounded-full bg-indigo-600 active:bg-indigo-500 text-white text-xs font-semibold shadow-xl shadow-indigo-600/40 flex items-center gap-2">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/>
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                </svg>
-                <span>Построить</span>
-            </button>
+            <!-- Code-View Floating Toolbar (Strictly separated flex container, never overlaps) -->
+            <div id="codeFloatingControls" class="absolute bottom-4 right-4 z-20 flex items-center gap-2 pointer-events-auto">
+                <button id="btnClearCode" type="button" title="Очистить код" class="h-10 px-3.5 rounded-full bg-slate-800/95 hover:bg-slate-700 active:bg-slate-600 text-slate-300 border border-slate-700 text-xs font-medium shadow-lg backdrop-blur flex items-center gap-1.5 shrink-0 transition">
+                    <svg class="w-3.5 h-3.5 text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                    </svg>
+                    <span>Очистить</span>
+                </button>
+
+                <button id="btnMobileBuild" type="button" class="md:hidden h-10 px-4 rounded-full bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-700 text-white text-xs font-semibold shadow-xl shadow-indigo-600/30 flex items-center gap-1.5 shrink-0 transition">
+                    <span>Построить</span>
+                    <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+                    </svg>
+                </button>
+            </div>
         </div>
 
         <!-- Flowchart Canvas Panel -->
@@ -149,25 +170,28 @@
                 </svg>
             </div>
 
-            <!-- Touch-Friendly Bottom-Right Zoom Controls -->
-            <div class="absolute bottom-4 right-4 z-20 flex items-center bg-slate-900/90 backdrop-blur border border-slate-700/80 p-1 rounded-2xl shadow-xl">
-                <button id="btnZoomOut" aria-label="Отдалить" class="w-11 h-11 flex items-center justify-center rounded-xl text-slate-200 hover:bg-slate-800 active:bg-slate-700 transition">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"/>
-                    </svg>
-                </button>
-                <button id="btnFitView" title="По центру" class="h-11 px-3 flex items-center justify-center rounded-xl text-xs font-mono text-slate-200 hover:bg-slate-800 active:bg-slate-700 transition min-w-[54px]">
-                    <span id="zoomLabel">100%</span>
-                </button>
-                <button id="btnZoomIn" aria-label="Приблизить" class="w-11 h-11 flex items-center justify-center rounded-xl text-slate-200 hover:bg-slate-800 active:bg-slate-700 transition">
+            <!-- Vertical Pill Zoom Controls (Only visible in Chart View, fixed 42x42 buttons so they never collide) -->
+            <div id="chartFloatingControls" class="
+```
+```html
+absolute bottom-4 right-4 z-20 flex flex-col items-center gap-1.5 bg-slate-900/95 backdrop-blur border border-slate-700/80 p-1.5 rounded-2xl shadow-xl">
+                <button id="btnZoomIn" type="button" aria-label="Приблизить" class="w-[42px] h-[42px] flex items-center justify-center rounded-xl text-slate-200 bg-slate-800/70 hover:bg-slate-700 active:bg-slate-600 transition shrink-0">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                    </svg>
+                </button>
+                <button id="btnFitView" type="button" title="По центру" class="w-[42px] h-[42px] flex items-center justify-center rounded-xl text-[11px] font-mono font-semibold text-indigo-300 bg-slate-800/70 hover:bg-slate-700 active:bg-slate-600 transition shrink-0">
+                    <span id="zoomLabel">100%</span>
+                </button>
+                <button id="btnZoomOut" type="button" aria-label="Отдалить" class="w-[42px] h-[42px] flex items-center justify-center rounded-xl text-slate-200 bg-slate-800/70 hover:bg-slate-700 active:bg-slate-600 transition shrink-0">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"/>
                     </svg>
                 </button>
             </div>
 
             <!-- Minimal Toast for Line Selection on Mobile -->
-            <div id="lineToast" class="pointer-events-none opacity-0 transition-opacity duration-200 absolute top-3 left-1/2 -translate-x-1/2 z-20 bg-slate-900/90 text-slate-100 border border-slate-700 px-3 py-1 rounded-full text-xs font-mono shadow-lg">
+            <div id="lineToast" class="pointer-events-none opacity-0 transition-opacity duration-200 absolute top-3 left-1/2 -translate-x-1/2 z-20 bg-slate-900/95 text-slate-100 border border-slate-700 px-3 py-1.5 rounded-full text-xs font-mono shadow-lg max-w-[90%] truncate">
                 Строка 1
             </div>
         </div>
@@ -1854,6 +1878,7 @@ public class Calculator {
         const codePanel = document.getElementById('codePanel');
         const chartPanel = document.getElementById('chartPanel');
         const btnMobileBuild = document.getElementById('btnMobileBuild');
+        const btnClearCode = document.getElementById('btnClearCode');
         const lineToast = document.getElementById('lineToast');
 
         const canvasViewport = document.getElementById('canvasViewport');
@@ -1885,16 +1910,18 @@ public class Calculator {
 
             if (tab === 'code') {
                 codePanel.classList.remove('hidden');
+                codePanel.classList.add('flex');
                 chartPanel.classList.add('hidden');
                 chartPanel.classList.remove('flex');
-                tabCode.className = 'px-3 py-1 rounded-md text-xs font-medium bg-indigo-600 text-white transition';
-                tabChart.className = 'px-3 py-1 rounded-md text-xs font-medium text-slate-400 hover:text-white transition';
+                tabCode.className = 'px-3 py-1.5 rounded-md text-xs font-semibold bg-indigo-600 text-white transition shrink-0';
+                tabChart.className = 'px-3 py-1.5 rounded-md text-xs font-semibold text-slate-400 hover:text-white transition shrink-0';
             } else {
                 codePanel.classList.add('hidden');
+                codePanel.classList.remove('flex');
                 chartPanel.classList.remove('hidden');
                 chartPanel.classList.add('flex');
-                tabChart.className = 'px-3 py-1 rounded-md text-xs font-medium bg-indigo-600 text-white transition';
-                tabCode.className = 'px-3 py-1 rounded-md text-xs font-medium text-slate-400 hover:text-white transition';
+                tabChart.className = 'px-3 py-1.5 rounded-md text-xs font-semibold bg-indigo-600 text-white transition shrink-0';
+                tabCode.className = 'px-3 py-1.5 rounded-md text-xs font-semibold text-slate-400 hover:text-white transition shrink-0';
                 requestAnimationFrame(() => fitDiagramToViewport());
             }
         }
@@ -1907,6 +1934,12 @@ public class Calculator {
         btnMobileBuild.addEventListener('click', () => {
             compileAndRender(true);
             setMobileTab('chart');
+        });
+        btnClearCode.addEventListener('click', () => {
+            codeInput.value = '';
+            updateLineNumbers();
+            compileAndRender(true);
+            codeInput.focus();
         });
 
         function updateLineNumbers() {
@@ -2145,10 +2178,10 @@ public class Calculator {
 
         btnHexToggle.addEventListener('click', () => {
             forAsHexagon = !forAsHexagon;
-            btnHexToggle.textContent = forAsHexagon ? '⬡ for' : '◇ for';
+            btnHexToggle.textContent = forAsHexagon ? '⬡ ГОСТ' : '◇ Ромб';
             btnHexToggle.className = forAsHexagon
-                ? 'h-8 px-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-indigo-300 border border-slate-700 text-xs font-mono font-semibold transition'
-                : 'h-8 px-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-amber-300 border border-slate-700 text-xs font-mono font-semibold transition';
+                ? 'h-8 px-2.5 rounded-lg bg-slate-800 hover:bg-slate-700 active:bg-slate-600 text-indigo-300 border border-slate-700 text-xs font-mono font-semibold transition shrink-0 whitespace-nowrap'
+                : 'h-8 px-2.5 rounded-lg bg-slate-800 hover:bg-slate-700 active:bg-slate-600 text-amber-300 border border-slate-700 text-xs font-mono font-semibold transition shrink-0 whitespace-nowrap';
             compileAndRender(false);
         });
 
@@ -2244,6 +2277,7 @@ public class Calculator {
         window.addEventListener('resize', () => {
             if (window.innerWidth >= 768) {
                 codePanel.classList.remove('hidden');
+                codePanel.classList.add('flex');
                 chartPanel.classList.remove('hidden');
                 chartPanel.classList.add('flex');
                 fitDiagramToViewport();

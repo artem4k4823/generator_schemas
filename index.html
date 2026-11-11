@@ -88,16 +88,37 @@
 
             <!-- Presets & Method Selectors -->
             <div class="flex items-center gap-1.5 min-w-0 flex-1 sm:flex-initial justify-end sm:justify-start">
-                <select id="presetSelect" aria-label="Примеры" class="h-8 bg-slate-800 text-slate-200 border border-slate-700 rounded-lg px-2 text-xs font-medium focus:outline-none cursor-pointer truncate min-w-[110px] max-w-[175px] sm:max-w-[210px] shrink">
-                    <option value="quadratic">Квадратное ур-е</option>
-                    <option value="maxArray">Цикл + Условие</option>
-                    <option value="factorial">Факториал (while)</option>
-                    <option value="bubbleSort">Сортировка (for)</option>
-                    <option value="doWhileMenu">ПИН-код (do-while)</option>
-                    <option value="switchCalc">Switch-Case</option>
+                <select id="presetSelect" aria-label="Примеры" class="h-8 bg-slate-800 text-slate-200 border border-slate-700 rounded-lg px-2 text-xs font-medium focus:outline-none cursor-pointer truncate min-w-[110px] max-w-[165px] sm:max-w-[210px] shrink">
+                    <optgroup id="customPresetsGroup" label="Мои коды" class="hidden"></optgroup>
+                    <optgroup label="Стандартные">
+                        <option value="bubbleSort">Сортировка пузырьком</option>
+                        <option value="insertionSort">Сортировка вставками</option>
+                        <option value="selectionSort">Сортировка выбором</option>
+                        <option value="quickSort">Быстрая сортировка</option>
+                        <option value="mergeSort">Сортировка слиянием</option>
+                        <option value="quadratic">Квадратное ур-е</option>
+                        <option value="maxArray">Поиск максимума</option>
+                        <option value="factorial">Факториал (while)</option>
+                        <option value="doWhileMenu">ПИН-код (do-while)</option>
+                        <option value="switchCalc">Калькулятор (switch)</option>
+                    </optgroup>
                 </select>
 
-                <select id="methodSelect" aria-label="Метод" class="hidden h-8 bg-slate-800 text-indigo-300 border border-slate-700 rounded-lg px-2 text-xs font-medium focus:outline-none cursor-pointer truncate max-w-[115px] sm:max-w-[160px] shrink-0"></select>
+                <!-- Save current code to list -->
+                <button id="btnSavePreset" type="button" title="Сохранить текущий код в список" class="h-8 w-8 rounded-lg bg-emerald-600/20 hover:bg-emerald-600/30 active:bg-emerald-600/40 text-emerald-400 border border-emerald-500/30 flex items-center justify-center transition shrink-0">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                    </svg>
+                </button>
+
+                <!-- Delete custom code (visible only when a custom code is selected) -->
+                <button id="btnDeletePreset" type="button" title="Удалить выбранный свой код" class="hidden h-8 w-8 rounded-lg bg-rose-600/20 hover:bg-rose-600/30 active:bg-rose-600/40 text-rose-400 border border-rose-500/30 items-center justify-center transition shrink-0">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+
+                <select id="methodSelect" aria-label="Метод" class="hidden h-8 bg-slate-800 text-indigo-300 border border-slate-700 rounded-lg px-2 text-xs font-medium focus:outline-none cursor-pointer truncate max-w-[110px] sm:max-w-[150px] shrink-0"></select>
             </div>
         </div>
 
@@ -108,8 +129,8 @@
                 <span id="themeLabel">Цвет</span>
             </button>
 
-            <button id="btnHexToggle" type="button" title="Форма цикла for: Шестиугольник ГОСТ / Ромб" class="h-8 px-2.5 rounded-lg bg-slate-800 hover:bg-slate-700 active:bg-slate-600 text-indigo-300 border border-slate-700 text-xs font-mono font-semibold transition shrink-0 whitespace-nowrap">
-                ⬡ ГОСТ
+            <button id="btnHexToggle" type="button" title="Форма цикла for: Ромб / Шестиугольник ГОСТ" class="h-8 px-2.5 rounded-lg bg-slate-800 hover:bg-slate-700 active:bg-slate-600 text-amber-300 border border-slate-700 text-xs font-mono font-semibold transition shrink-0 whitespace-nowrap">
+                ◇ Ромб
             </button>
 
             <button id="btnExportSVG" type="button" title="Скачать SVG" class="h-8 px-3 rounded-lg bg-slate-800 hover:bg-slate-700 active:bg-slate-600 text-slate-200 border border-slate-700 text-xs font-medium transition shrink-0 whitespace-nowrap">
@@ -195,6 +216,28 @@ absolute bottom-4 right-4 z-20 flex flex-col items-center gap-1.5 bg-slate-900/9
                 Строка 1
             </div>
         </div>
+
+        <!-- Compact Save Custom Code Modal -->
+        <div id="saveModal" class="hidden fixed inset-0 z-50 bg-slate-950/75 backdrop-blur-xs flex items-center justify-center p-4">
+            <div class="bg-slate-900 border border-slate-700 rounded-2xl p-4 w-full max-w-xs shadow-2xl">
+                <div class="text-xs font-semibold text-slate-200 mb-2.5">Добавить свой код в список</div>
+                <input 
+                    id="customPresetName" 
+                    type="text" 
+                    maxlength="40"
+                    placeholder="Название (напр. Лаба №1)" 
+                    class="w-full h-9 bg-slate-950 border border-slate-700 rounded-lg px-3 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-indigo-500 mb-3"
+                />
+                <div class="flex items-center justify-end gap-2">
+                    <button id="btnCancelSave" type="button" class="h-8 px-3 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-medium transition">
+                        Отмена
+                    </button>
+                    <button id="btnConfirmSave" type="button" class="h-8 px-3.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold transition">
+                        Сохранить
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -202,6 +245,141 @@ absolute bottom-4 right-4 z-20 flex flex-col items-center gap-1.5 bg-slate-900/9
          * 1. PRESET JAVA EXAMPLES
          ********************************************************************/
         const JAVA_PRESETS = {
+            bubbleSort: `public class BubbleSort {
+    public static void bubbleSort(int[] arr, int n) {
+        for (int i = 0; i < n - 1; i++) {
+            for (int j = 0; j < n - i - 1; j++) {
+                if (arr[j] > arr[j + 1]) {
+                    int temp = arr[j];
+                    arr[j] = arr[j + 1];
+                    arr[j + 1] = temp;
+                }
+            }
+        }
+        System.out.println("Массив отсортирован");
+    }
+}`,
+            insertionSort: `public class InsertionSort {
+    public static void insertionSort(int[] arr, int n) {
+        for (int i = 1; i < n; i++) {
+            int key = arr[i];
+            int j = i - 1;
+            while (j >= 0 && arr[j] > key) {
+                arr[j + 1] = arr[j];
+                j = j - 1;
+            }
+            arr[j + 1] = key;
+        }
+        System.out.println("Массив отсортирован");
+    }
+}`,
+            selectionSort: `public class SelectionSort {
+    public static void selectionSort(int[] arr, int n) {
+        for (int i = 0; i < n - 1; i++) {
+            int minIdx = i;
+            for (int j = i + 1; j < n; j++) {
+                if (arr[j] < arr[minIdx]) {
+                    minIdx = j;
+                }
+            }
+            if (minIdx != i) {
+                int temp = arr[minIdx];
+                arr[minIdx] = arr[i];
+                arr[i] = temp;
+            }
+        }
+        System.out.println("Массив отсортирован");
+    }
+}`,
+            quickSort: `public class QuickSort {
+    public static void quickSort(int[] arr, int low, int high) {
+        if (low < high) {
+            int pivot = arr[high];
+            int i = low - 1;
+            for (int j = low; j < high; j++) {
+                if (arr[j] <= pivot) {
+                    i++;
+                    int temp = arr[i];
+                    arr[i] = arr[j];
+                    arr[j] = temp;
+                }
+            }
+            int temp = arr[i + 1];
+            arr[i + 1] = arr[high];
+            arr[high] = temp;
+            int pi = i + 1;
+
+            quickSort(arr, low, pi - 1);
+            quickSort(arr, pi + 1, high);
+        }
+    }
+
+    public static int partition(int[] arr, int low, int high) {
+        int pivot = arr[high];
+        int i = low - 1;
+        for (int j = low; j < high; j++) {
+            if (arr[j] <= pivot) {
+                i++;
+                int temp = arr[i];
+                arr[i] = arr[j];
+                arr[j] = temp;
+            }
+        }
+        int temp = arr[i + 1];
+        arr[i + 1] = arr[high];
+        arr[high] = temp;
+        return i + 1;
+    }
+}`,
+            mergeSort: `public class MergeSort {
+    public static void mergeSort(int[] arr, int left, int right) {
+        if (left < right) {
+            int mid = (left + right) / 2;
+            mergeSort(arr, left, mid);
+            mergeSort(arr, mid + 1, right);
+            merge(arr, left, mid, right);
+        }
+    }
+
+    public static void merge(int[] arr, int left, int mid, int right) {
+        int n1 = mid - left + 1;
+        int n2 = right - mid;
+        int[] L = new int[n1];
+        int[] R = new int[n2];
+
+        for (int i = 0; i < n1; i++) {
+            L[i] = arr[left + i];
+        }
+        for (int j = 0; j < n2; j++) {
+            R[j] = arr[mid + 1 + j];
+        }
+
+        int i = 0;
+        int j = 0;
+        int k = left;
+        while (i < n1 && j < n2) {
+            if (L[i] <= R[j]) {
+                arr[k] = L[i];
+                i++;
+            } else {
+                arr[k] = R[j];
+                j++;
+            }
+            k++;
+        }
+
+        while (i < n1) {
+            arr[k] = L[i];
+            i++;
+            k++;
+        }
+        while (j < n2) {
+            arr[k] = R[j];
+            j++;
+            k++;
+        }
+    }
+}`,
             quadratic: `import java.util.Scanner;
 
 public class QuadraticSolver {
@@ -264,20 +442,6 @@ public class FactorialCalc {
         }
 
         System.out.println("Факториал = " + fact);
-    }
-}`,
-            bubbleSort: `public class BubbleSort {
-    public static void sort(int[] a, int n) {
-        for (int i = 0; i < n - 1; i++) {
-            for (int j = 0; j < n - i - 1; j++) {
-                if (a[j] > a[j + 1]) {
-                    int temp = a[j];
-                    a[j] = a[j + 1];
-                    a[j + 1] = temp;
-                }
-            }
-        }
-        System.out.println("Массив отсортирован");
     }
 }`,
             doWhileMenu: `import java.util.Scanner;
@@ -937,7 +1101,7 @@ public class Calculator {
          ********************************************************************/
         class FlowchartLayoutEngine {
             constructor(options = {}) {
-                this.forAsHexagon = options.forAsHexagon ?? true;
+                this.forAsHexagon = options.forAsHexagon ?? false;
                 this.nodeW = 190;
                 this.nodeH = 52;
                 this.vGap = 36;
@@ -1146,10 +1310,40 @@ public class Calculator {
                     case 'while':
                         return this.layoutWhile(node);
                     case 'for':
-                        return this.forAsHexagon ? this.layoutForHexagon(node) : this.layoutWhile({
-                            ...node,
-                            condition: node.header
-                        });
+                        if (this.forAsHexagon) {
+                            return this.layoutForHexagon(node);
+                        } else {
+                            // Classic Diamond mode for 'for' loop:
+                            // 1) Initialization process block above loop (if present)
+                            // 2) Diamond with loop condition
+                            // 3) Step block at the end of loop body (if present)
+                            const expandedNodes = [];
+                            if (node.init) {
+                                expandedNodes.push({
+                                    id: `${node.id}_init`,
+                                    type: 'process',
+                                    text: node.init,
+                                    line: node.line
+                                });
+                            }
+                            const loopBody = [...(node.body || [])];
+                            if (node.step) {
+                                loopBody.push({
+                                    id: `${node.id}_step`,
+                                    type: 'process',
+                                    text: node.step,
+                                    line: node.line
+                                });
+                            }
+                            expandedNodes.push({
+                                id: node.id,
+                                type: 'while',
+                                condition: node.condition || node.header,
+                                body: loopBody,
+                                line: node.line
+                            });
+                            return this.layoutSequence(expandedNodes);
+                        }
                     case 'doWhile':
                         return this.layoutDoWhile(node);
                     default:
@@ -1867,6 +2061,13 @@ public class Calculator {
         const codeInput = document.getElementById('codeInput');
         const lineNumbers = document.getElementById('lineNumbers');
         const presetSelect = document.getElementById('presetSelect');
+        const customPresetsGroup = document.getElementById('customPresetsGroup');
+        const btnSavePreset = document.getElementById('btnSavePreset');
+        const btnDeletePreset = document.getElementById('btnDeletePreset');
+        const saveModal = document.getElementById('saveModal');
+        const customPresetName = document.getElementById('customPresetName');
+        const btnCancelSave = document.getElementById('btnCancelSave');
+        const btnConfirmSave = document.getElementById('btnConfirmSave');
         const methodSelect = document.getElementById('methodSelect');
         const btnThemeToggle = document.getElementById('btnThemeToggle');
         const themeIndicator = document.getElementById('themeIndicator');
@@ -1893,8 +2094,70 @@ public class Calculator {
         let currentParsedMethod = null;
         let currentLayout = null;
         let currentTheme = 'modern'; // 'modern' | 'gost'
-        let forAsHexagon = true;
+        let forAsHexagon = false;
         let activeMobileTab = 'code'; // 'code' | 'chart'
+
+        // Custom Presets Storage (localStorage)
+        const STORAGE_KEY = 'java2flow_custom_presets_v1';
+        let customPresets = {};
+
+        function loadCustomPresets() {
+            try {
+                const raw = localStorage.getItem(STORAGE_KEY);
+                customPresets = raw ? JSON.parse(raw) : {};
+            } catch (e) {
+                customPresets = {};
+            }
+            renderCustomPresetsDropdown();
+        }
+
+        function saveCustomPresetsToStorage() {
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(customPresets));
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        function renderCustomPresetsDropdown(selectedKey = null) {
+            const keys = Object.keys(customPresets);
+            customPresetsGroup.innerHTML = '';
+
+            if (keys.length === 0) {
+                customPresetsGroup.classList.add('hidden');
+            } else {
+                customPresetsGroup.classList.remove('hidden');
+                for (const key of keys) {
+                    const opt = document.createElement('option');
+                    opt.value = key;
+                    opt.textContent = `★ ${customPresets[key].title}`;
+                    customPresetsGroup.appendChild(opt);
+                }
+            }
+
+            if (selectedKey && (customPresets[selectedKey] || JAVA_PRESETS[selectedKey])) {
+                presetSelect.value = selectedKey;
+            }
+            updateDeleteButtonVisibility();
+        }
+
+        function updateDeleteButtonVisibility() {
+            const val = presetSelect.value;
+            if (val && val.startsWith('custom_') && customPresets[val]) {
+                btnDeletePreset.classList.remove('hidden');
+                btnDeletePreset.classList.add('flex');
+            } else {
+                btnDeletePreset.classList.add('hidden');
+                btnDeletePreset.classList.remove('flex');
+            }
+        }
+
+        function getPresetCode(key) {
+            if (key && key.startsWith('custom_') && customPresets[key]) {
+                return customPresets[key].code;
+            }
+            return JAVA_PRESETS[key] || '';
+        }
 
         // Pan & Zoom State
         let panX = 0;
@@ -2157,8 +2420,80 @@ public class Calculator {
         // Controls & Toggles
         presetSelect.addEventListener('change', () => {
             const key = presetSelect.value;
-            if (JAVA_PRESETS[key]) {
-                codeInput.value = JAVA_PRESETS[key];
+            const code = getPresetCode(key);
+            updateDeleteButtonVisibility();
+            if (code) {
+                codeInput.value = code;
+                methodSelect.selectedIndex = 0;
+                updateLineNumbers();
+                compileAndRender(true);
+            }
+        });
+
+        // Open Save Custom Code Modal
+        btnSavePreset.addEventListener('click', () => {
+            const currentKey = presetSelect.value;
+            if (currentKey && currentKey.startsWith('custom_') && customPresets[currentKey]) {
+                customPresetName.value = customPresets[currentKey].title;
+            } else {
+                // Suggest class or method name from current code
+                const classMatch = /\bclass\s+(\w+)/.exec(codeInput.value);
+                customPresetName.value = classMatch ? classMatch[1] : '';
+            }
+            saveModal.classList.remove('hidden');
+            setTimeout(() => customPresetName.focus(), 30);
+        });
+
+        function closeSaveModal() {
+            saveModal.classList.add('hidden');
+        }
+
+        btnCancelSave.addEventListener('click', closeSaveModal);
+        saveModal.addEventListener('click', (e) => {
+            if (e.target === saveModal) closeSaveModal();
+        });
+
+        function confirmSaveCustomPreset() {
+            const title = customPresetName.value.trim() || `Мой код ${Object.keys(customPresets).length + 1}`;
+            const code = codeInput.value;
+            if (!code.trim()) {
+                closeSaveModal();
+                return;
+            }
+
+            // Check if a custom preset with the same title already exists to update it
+            let targetKey = Object.keys(customPresets).find(
+                k => customPresets[k].title.toLowerCase() === title.toLowerCase()
+            );
+            if (!targetKey) {
+                targetKey = `custom_${Date.now()}`;
+            }
+
+            customPresets[targetKey] = { title, code };
+            saveCustomPresetsToStorage();
+            renderCustomPresetsDropdown(targetKey);
+            closeSaveModal();
+        }
+
+        btnConfirmSave.addEventListener('click', confirmSaveCustomPreset);
+        customPresetName.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                confirmSaveCustomPreset();
+            } else if (e.key === 'Escape') {
+                closeSaveModal();
+            }
+        });
+
+        // Delete Custom Code from List
+        btnDeletePreset.addEventListener('click', () => {
+            const key = presetSelect.value;
+            if (key && key.startsWith('custom_') && customPresets[key]) {
+                delete customPresets[key];
+                saveCustomPresetsToStorage();
+                renderCustomPresetsDropdown('bubbleSort');
+                codeInput.value = JAVA_PRESETS.bubbleSort;
+                methodSelect.selectedIndex = 0;
                 updateLineNumbers();
                 compileAndRender(true);
             }
@@ -2269,7 +2604,8 @@ public class Calculator {
 
         // Initialize on load & handle responsive orientation changes
         window.addEventListener('load', () => {
-            codeInput.value = JAVA_PRESETS.quadratic;
+            loadCustomPresets();
+            codeInput.value = JAVA_PRESETS.bubbleSort;
             updateLineNumbers();
             compileAndRender(true);
         });
@@ -2280,10 +2616,10 @@ public class Calculator {
                 codePanel.classList.add('flex');
                 chartPanel.classList.remove('hidden');
                 chartPanel.classList.add('flex');
-                fitDiagramToViewport();
             } else {
                 setMobileTab(activeMobileTab);
             }
+            fitDiagramToViewport();
         });
     </script>
 </body>
